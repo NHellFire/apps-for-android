@@ -1,0 +1,3 @@
+ANDROID_API=23
+ARCH=arm64
+NDK_ROOT=/opt/android-ndk

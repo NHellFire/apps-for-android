@@ -1,0 +1,95 @@
+#!/bin/bash
+set -e
+
+ANDROID_API=23
+ARCH=arm64
+NDK_ROOT=${NDK_ROOT:-/opt/android-ndk}
+
+
+TOP="$(realpath "$(dirname "$0")")"
+cd "${TOP}"
+
+MATRIXSSL="$TOP/../matrixssl"
+WOLFSSL="$TOP/../wolfssl"
+OPENSSL="$TOP/../openssl"
+
+[ -e "$TOP/../config.sh" ] && . "$TOP/../config.sh"
+
+
+EABI=
+case "$ARCH" in
+	arm64)
+		GCC_ARCH="aarch64"
+	;;
+	arm)
+		GCC_ARCH="arm"
+		EABI=eabi
+	;;
+	mips|mips64)
+		GCC_ARCH="${ARCH}el"
+	;;
+	x86|x86_64)
+		GCC_ARCH="${ARCH}"
+	;;
+	*)
+		echo "Unknown architecture: ${ARCH}"
+		exit
+esac
+
+export HOST="${GCC_ARCH}-linux-android$EABI"
+
+TOOLCHAIN="${NDK_ROOT}/toolchains/${HOST}-4.9/prebuilt/linux-x86_64"
+
+
+
+export CROSS_COMPILE="${HOST}-"
+
+PATH="$TOOLCHAIN/bin:$PATH"
+
+export SYSROOT="${NDK_ROOT}/platforms/android-${ANDROID_API}/arch-${ARCH}"
+export CFLAGS="--sysroot=${SYSROOT}"
+
+cd src
+
+quilt push -a || [ $? = 2 ]
+
+cp "patches/android_ndk_${ARCH}_defconfig" .config
+yes '' | make oldconfig
+
+make -j$(nproc)
+
+quilt pop -a
+
+# Cleanup old output
+cd "$TOP"
+rm -rf install_dir/
+mkdir -p install_dir
+
+
+if false; then
+# These are disabled for now, we'll use OpenSSL instead
+
+# MatrixSSL helper needs updating for latest version
+
+# WolfSSL helper doesn't seem to handle the connection being closed
+# and instead makes downloads stay on stalled once complete
+
+printf "\n\nNow building ssl_helper... "
+"$MATRIXSSL/build.sh"
+${HOST}-gcc $CFLAGS -Os -I"$MATRIXSSL/src" "$MATRIXSSL/src/matrixssl/libssl_s.a" "src/networking/ssl_helper/ssl_helper.c" -o install_dir/ssl_helper
+
+"$WOLFSSL/build.sh"
+${HOST}-gcc $CFLAGS -fpie -pie -I"$WOLFSSL/src" "src/networking/ssl_helper-wolfssl/ssl_helper.c" "$WOLFSSL/src/src/.libs/libwolfssl.a" -lm -lz -o install_dir/ssl_helper
+${HOST}-strip install_dir/ssl_helper
+printf "done\n"
+fi
+
+printf "\n\nNow building OpenSSL for wget SSL support...\n"
+"${OPENSSL}/build.sh"
+
+
+cp -v src/busybox install_dir/
+cp -v "${OPENSSL}/install_dir/openssl" install_dir/
+
+
+printf "\n\nBuild complete! See install_dir/\n"

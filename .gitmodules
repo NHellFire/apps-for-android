@@ -1,0 +1,15 @@
+[submodule "matrixssl/src"]
+	path = matrixssl/src
+	url = https://github.com/matrixssl/matrixssl.git
+[submodule "busybox/src"]
+	path = busybox/src
+	url = https://github.com/NHellFire/busybox-android-ndk.git
+[submodule "wolfssl/src"]
+	path = wolfssl/src
+	url = https://github.com/wolfSSL/wolfssl.git
+[submodule "openssl/src"]
+	path = openssl/src
+	url = https://github.com/openssl/openssl.git
+[submodule "fdupes/src"]
+	path = fdupes/src
+	url = https://github.com/adrianlopezroche/fdupes.git
