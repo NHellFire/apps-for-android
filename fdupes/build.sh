@@ -56,10 +56,10 @@ make -j$(nproc)
 
 cd "${TOP}"
 
-rm -rf install_dir/
-mkdir -p install_dir/
-cp -v src/fdupes install_dir/
-${STRIP} install_dir/fdupes
+rm -rf install_dir/$ARCH/
+mkdir -p install_dir/$ARCH/
+cp -v src/fdupes install_dir/$ARCH/
+${STRIP} install_dir/$ARCH/fdupes
 
 
-printf "\n\nBuild complete! See install_dir/\n"
+printf "\n\nBuild complete! See install_dir/$ARCH\n"

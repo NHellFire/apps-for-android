@@ -73,11 +73,11 @@ ${CROSS_COMPILE}strip apps/openssl
 
 # Cleanup old output
 cd "$TOP"
-rm -rf install_dir/
-mkdir -p install_dir
+rm -rf install_dir/$ARCH/
+mkdir -p install_dir/$ARCH
 
 
-cp -v src/apps/openssl install_dir/
+cp -v src/apps/openssl install_dir/$ARCH/
 
 
-printf "\n\nBuild complete! See install_dir/\n"
+printf "\n\nBuild complete! See install_dir/$ARCH/\n"

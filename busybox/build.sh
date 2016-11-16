@@ -62,8 +62,8 @@ quilt pop -a
 
 # Cleanup old output
 cd "$TOP"
-rm -rf install_dir/
-mkdir -p install_dir
+rm -rf install_dir/$ARCH
+mkdir -p install_dir/$ARCH
 
 
 if false; then
@@ -76,11 +76,11 @@ if false; then
 
 printf "\n\nNow building ssl_helper... "
 "$MATRIXSSL/build.sh"
-${HOST}-gcc $CFLAGS -Os -I"$MATRIXSSL/src" "$MATRIXSSL/src/matrixssl/libssl_s.a" "src/networking/ssl_helper/ssl_helper.c" -o install_dir/ssl_helper
+${HOST}-gcc $CFLAGS -Os -I"$MATRIXSSL/src" "$MATRIXSSL/src/matrixssl/libssl_s.a" "src/networking/ssl_helper/ssl_helper.c" -o install_dir/$ARCH/ssl_helper
 
 "$WOLFSSL/build.sh"
-${HOST}-gcc $CFLAGS -fpie -pie -I"$WOLFSSL/src" "src/networking/ssl_helper-wolfssl/ssl_helper.c" "$WOLFSSL/src/src/.libs/libwolfssl.a" -lm -lz -o install_dir/ssl_helper
-${HOST}-strip install_dir/ssl_helper
+${HOST}-gcc $CFLAGS -fpie -pie -I"$WOLFSSL/src" "src/networking/ssl_helper-wolfssl/ssl_helper.c" "$WOLFSSL/src/src/.libs/libwolfssl.a" -lm -lz -o install_dir/$ARCH/ssl_helper
+${HOST}-strip install_dir/$ARCH/ssl_helper
 printf "done\n"
 fi
 
@@ -88,8 +88,8 @@ printf "\n\nNow building OpenSSL for wget SSL support...\n"
 "${OPENSSL}/build.sh"
 
 
-cp -v src/busybox install_dir/
-cp -v "${OPENSSL}/install_dir/openssl" install_dir/
+cp -v src/busybox install_dir/$ARCH/
+cp -v "${OPENSSL}/install_dir/openssl" install_dir/$ARCH/
 
 
-printf "\n\nBuild complete! See install_dir/\n"
+printf "\n\nBuild complete! See install_dir/$ARCH/\n"
