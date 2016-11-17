@@ -19,3 +19,6 @@
 [submodule "htop/src"]
 	path = htop/src
 	url = https://github.com/hishamhm/htop
+[submodule "nano/src"]
+	path = nano/src
+	url = http://git.savannah.gnu.org/r/nano.git
