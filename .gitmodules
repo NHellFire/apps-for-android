@@ -16,3 +16,6 @@
 [submodule "ncurses/src"]
 	path = ncurses/src
 	url = https://github.com/mirror/ncurses
+[submodule "htop/src"]
+	path = htop/src
+	url = https://github.com/hishamhm/htop
