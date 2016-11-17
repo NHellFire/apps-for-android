@@ -13,3 +13,6 @@
 [submodule "fdupes/src"]
 	path = fdupes/src
 	url = https://github.com/adrianlopezroche/fdupes.git
+[submodule "ncurses/src"]
+	path = ncurses/src
+	url = https://github.com/mirror/ncurses
