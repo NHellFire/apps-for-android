@@ -1,0 +1,181 @@
+Requirements: gnulib-tool --import glob unistr/m8-mblen
+
+diff --git a/Makefile.am b/Makefile.am
+index 633e5808..f9072507 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -1,6 +1,6 @@
+ AUTOMAKE_OPTIONS = gnu no-dependencies
+ 
+-SUBDIRS = doc m4 po src
++SUBDIRS = doc lib m4 po src
+ 
+ EXTRA_DIST = ChangeLog.pre-2.1 IMPROVEMENTS README.GIT nano.spec
+ 
+diff --git a/configure.ac b/configure.ac
+index 329dc65b..d6bd6df4 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -30,10 +30,12 @@ dnl Checks for programs.
+ 
+ AC_GNU_SOURCE
+ AC_PROG_CC
++gl_EARLY
+ AC_PROG_LN_S
+ AC_ISC_POSIX
+ AC_SYS_LARGEFILE
+ PKG_PROG_PKG_CONFIG
++gl_INIT
+ 
+ dnl Internationalization macros.
+ 
+@@ -738,6 +740,7 @@ doc/man/Makefile
+ doc/man/fr/Makefile
+ doc/syntax/Makefile
+ doc/texinfo/Makefile
++lib/Makefile
+ m4/Makefile
+ po/Makefile.in
+ src/Makefile
+diff --git a/m4/Makefile.am b/m4/Makefile.am
+index ab8542c2..ba41afd2 100644
+--- a/m4/Makefile.am
++++ b/m4/Makefile.am
+@@ -1,5 +1,5 @@
+ EXTRA_DIST = ac_define_dir.m4 codeset.m4 gettext.m4 glib-2.0.m4 \
+-		glibc21.m4 iconv.m4 intdiv0.m4 inttypes_h.m4 \
++		glibc21.m4 gnulib-cache.m4 iconv.m4 intdiv0.m4 inttypes_h.m4 \
+ 		inttypes.m4 inttypes-pri.m4 isc-posix.m4 lcmessage.m4 \
+ 		lib-ld.m4 lib-link.m4 lib-prefix.m4 progtest.m4 \
+ 		stdint_h.m4 uintmax_t.m4 ulonglong.m4
+diff --git a/src/Makefile.am b/src/Makefile.am
+index 86db34f4..154df0a8 100644
+--- a/src/Makefile.am
++++ b/src/Makefile.am
+@@ -1,4 +1,4 @@
+-AM_CPPFLAGS = -DLOCALEDIR=\"$(localedir)\" -DSYSCONFDIR=\"$(sysconfdir)\"
++AM_CPPFLAGS = -DLOCALEDIR=\"$(localedir)\" -DSYSCONFDIR=\"$(sysconfdir)\" -I$(top_srcdir)/lib
+ 
+ if BUILDING_FROM_GIT
+ SOMETHING = "REVISION \"$(shell git describe --tags 2>/dev/null)\""
+@@ -35,7 +35,7 @@ nano_SOURCES =	browser.c \
+ 		utils.c \
+ 		winio.c 
+ 
+-nano_LDADD = @GLIB_LIBS@ @LIBINTL@
++nano_LDADD = @GLIB_LIBS@ @LIBINTL@ $(top_srcdir)/lib/libgnu.a
+ 
+ install-exec-hook:
+ 	cd $(DESTDIR)$(bindir) && rm -f rnano && $(LN_S) nano rnano
+diff --git a/src/chars.c b/src/chars.c
+index 4f12c5b2..1d6421bb 100644
+--- a/src/chars.c
++++ b/src/chars.c
+@@ -33,6 +33,8 @@
+ #include <wctype.h>
+ #endif
+ 
++#include <unistr.h>
++
+ static bool use_utf8 = FALSE;
+ 	/* Whether we've enabled UTF-8 support. */
+ 
+@@ -379,11 +381,11 @@ int parse_mbchar(const char *buf, char *chr, size_t *col)
+ #ifdef ENABLE_UTF8
+     if (use_utf8) {
+ 	/* Get the number of bytes in the multibyte character. */
+-	buf_mb_len = mblen(buf, MB_CUR_MAX);
++	buf_mb_len = u8_mblen(buf, MB_CUR_MAX);
+ 
+ 	/* When the multibyte sequence is invalid, only take the first byte. */
+ 	if (buf_mb_len < 0) {
+-	    IGNORE_CALL_RESULT(mblen(NULL, 0));
++	    IGNORE_CALL_RESULT(u8_mblen(NULL, 0));
+ 	    buf_mb_len = 1;
+ 	} else if (buf_mb_len == 0)
+ 	    buf_mb_len++;
+diff --git a/src/files.c b/src/files.c
+index a4ac750e..15bac155 100644
+--- a/src/files.c
++++ b/src/files.c
+@@ -2476,28 +2476,9 @@ char *real_dir_from_tilde(const char *buf)
+ 	size_t i = 1;
+ 	char *tilde_dir;
+ 
+-	/* Figure out how much of the string we need to compare. */
+-	for (; buf[i] != '/' && buf[i] != '\0'; i++)
+-	    ;
+-
+ 	/* Get the home directory. */
+-	if (i == 1) {
+-	    get_homedir();
+-	    tilde_dir = mallocstrcpy(NULL, homedir);
+-	} else {
+-	    const struct passwd *userdata;
+-
+-	    tilde_dir = mallocstrncpy(NULL, buf, i + 1);
+-	    tilde_dir[i] = '\0';
+-
+-	    do {
+-		userdata = getpwent();
+-	    } while (userdata != NULL &&
+-			strcmp(userdata->pw_name, tilde_dir + 1) != 0);
+-	    endpwent();
+-	    if (userdata != NULL)
+-		tilde_dir = mallocstrcpy(tilde_dir, userdata->pw_dir);
+-	}
++    get_homedir();
++    tilde_dir = mallocstrcpy(NULL, homedir);
+ 
+ 	retval = charalloc(strlen(tilde_dir) + strlen(buf + i) + 1);
+ 	sprintf(retval, "%s%s", tilde_dir, buf + i);
+@@ -2589,34 +2570,8 @@ char **username_tab_completion(const char *buf, size_t *num_matches,
+ 	size_t buf_len)
+ {
+     char **matches = NULL;
+-    const struct passwd *userdata;
+-
+-    assert(buf != NULL && num_matches != NULL && buf_len > 0);
+-
+     *num_matches = 0;
+-
+-    while ((userdata = getpwent()) != NULL) {
+-	if (strncmp(userdata->pw_name, buf + 1, buf_len - 1) == 0) {
+-	    /* Cool, found a match.  Add it to the list.  This makes a
+-	     * lot more sense to me (Chris) this way... */
+-
+-#ifndef DISABLE_OPERATINGDIR
+-	    /* ...unless the match exists outside the operating
+-	     * directory, in which case just go to the next match. */
+-	    if (check_operating_dir(userdata->pw_dir, TRUE))
+-		continue;
+-#endif
+-
+-	    matches = (char **)nrealloc(matches, (*num_matches + 1) *
+-					sizeof(char *));
+-	    matches[*num_matches] = charalloc(strlen(userdata->pw_name) + 2);
+-	    sprintf(matches[*num_matches], "~%s", userdata->pw_name);
+-	    ++(*num_matches);
+-	}
+-    }
+-    endpwent();
+-
+-    return matches;
++	return matches;
+ }
+ 
+ /* We consider the first buf_len characters of buf for filename tab
+diff --git a/src/nano.c b/src/nano.c
+index c9751120..efdbc6a9 100644
+--- a/src/nano.c
++++ b/src/nano.c
+@@ -2057,8 +2057,7 @@ int main(int argc, char **argv)
+ 	 * UTF-8. */
+ 	char *locale = setlocale(LC_ALL, "");
+ 
+-	if (locale != NULL && (strcmp(nl_langinfo(CODESET),
+-		"UTF-8") == 0)) {
++	if (1) {
+ #ifdef USE_SLANG
+ 	    SLutf8_enable(1);
+ #endif
