@@ -58,7 +58,7 @@ yes '' | make oldconfig
 
 make -j$(nproc)
 
-quilt pop -a
+quilt pop -af
 
 # Cleanup old output
 cd "$TOP"
@@ -89,7 +89,7 @@ printf "\n\nNow building OpenSSL for wget SSL support...\n"
 
 
 cp -v src/busybox install_dir/$ARCH/
-cp -v "${OPENSSL}/install_dir/openssl" install_dir/$ARCH/
+cp -v "${OPENSSL}/install_dir/$ARCH/openssl" install_dir/$ARCH/
 
 
 printf "\n\nBuild complete! See install_dir/$ARCH/\n"
