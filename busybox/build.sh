@@ -9,9 +9,7 @@ NDK_ROOT=${NDK_ROOT:-/opt/android-ndk}
 TOP="$(realpath "$(dirname "$0")")"
 cd "${TOP}"
 
-MATRIXSSL="$TOP/../matrixssl"
 WOLFSSL="$TOP/../wolfssl"
-OPENSSL="$TOP/../openssl"
 
 [ -e "$TOP/../config.sh" ] && . "$TOP/../config.sh"
 
@@ -66,26 +64,11 @@ rm -rf install_dir/$ARCH
 mkdir -p install_dir/$ARCH
 
 
-if false; then
-# These are disabled for now, we'll use OpenSSL instead
-
-# MatrixSSL helper needs updating for latest version
-
-# WolfSSL helper doesn't seem to handle the connection being closed
-# and instead makes downloads stay on stalled once complete
-
 printf "\n\nNow building ssl_helper... "
-"$MATRIXSSL/build.sh"
-${HOST}-gcc $CFLAGS -Os -I"$MATRIXSSL/src" "$MATRIXSSL/src/matrixssl/libssl_s.a" "src/networking/ssl_helper/ssl_helper.c" -o install_dir/$ARCH/ssl_helper
-
 "$WOLFSSL/build.sh"
 ${HOST}-gcc $CFLAGS -fpie -pie -I"$WOLFSSL/src" "src/networking/ssl_helper-wolfssl/ssl_helper.c" "$WOLFSSL/src/src/.libs/libwolfssl.a" -lm -lz -o install_dir/$ARCH/ssl_helper
 ${HOST}-strip install_dir/$ARCH/ssl_helper
 printf "done\n"
-fi
-
-printf "\n\nNow building OpenSSL for wget SSL support...\n"
-"${OPENSSL}/build.sh"
 
 
 cp -v src/busybox install_dir/$ARCH/
