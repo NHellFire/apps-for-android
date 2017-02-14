@@ -44,7 +44,7 @@ export STRIP="${HOST}-strip"
 
 PATH="$TOOLCHAIN/bin:$PATH"
 
-export CFLAGS="--sysroot=${NDK_ROOT}/platforms/android-${ANDROID_API}/arch-${ARCH} -fpie -DWOLFSSL_STATIC_RSA"
+export CFLAGS="--sysroot=${NDK_ROOT}/platforms/android-${ANDROID_API}/arch-${ARCH} -fpie"
 export LDFLAGS="-pie"
 
 export CC="$CC $CFLAGS $LDFLAGS"
