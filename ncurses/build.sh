@@ -68,7 +68,8 @@ cp "$TOP/patches/config.sub" "$TOP/patches/config.guess" -t .
 		--with-default-terminfo-dir=${PREFIX}/etc/terminfo \
 		--without-manpages \
 		--with-shared \
-		--with-termlib
+		--with-termlib \
+		--without-ada
 
 make -j8
 
@@ -88,7 +89,8 @@ make install
 		--without-manpages \
 		--with-shared \
 		--enable-widec \
-		--with-termlib
+		--with-termlib \
+		--without-ada
 
 make -j8
 
