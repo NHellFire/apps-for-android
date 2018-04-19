@@ -59,7 +59,8 @@ cd src
 
 gnulib-tool --import glob unistr/m8-mblen
 
-patch -Np1 -i ../android.patch
+patch -Np1 -i ../android.patch || true
+patch -Np1 -i ../android-home.patch || true
 
 ./autogen.sh
 
