@@ -42,13 +42,14 @@ NCURSES_LIB="$NCURSES_INSTALL/lib"
 export CROSS_COMPILE="${HOST}-"
 export PATH="$TOOLCHAIN/bin:$PATH"
 export SYSROOT="${NDK_ROOT}/platforms/android-${ANDROID_API}/arch-${ARCH}"
-export CFLAGS="--sysroot=${SYSROOT} -I$NCURSES_INCLUDE -L$NCURSES_LIB -fPIE"
+export CFLAGS="--sysroot=${SYSROOT} -I$NCURSES_INCLUDE -L$NCURSES_LIB -I${NDK_ROOT}/sysroot/usr/include -fPIE"
 export LDFLAGS="-L$NCURSES_LIB -pie"
 
 [ -e "$NCURSES_INCLUDE/ncursesw/ncurses.h" ] || "$TOP/../ncurses/build.sh"
 
 PREFIX="/data/local/nano"
 
+export QUILT_PATCHES="$TOP/patches"
 export DESTDIR="$TOP/install_dir/$ARCH/"
 
 # Cleanup old output
@@ -57,10 +58,9 @@ mkdir -p install_dir/$ARCH
 
 cd src
 
-gnulib-tool --import glob unistr/m8-mblen
+gnulib-tool --import glob unistr/u8-mblen
 
-patch -Np1 -i ../android.patch || true
-patch -Np1 -i ../android-home.patch || true
+quilt push -a ||  [ "$?" == "2" ]
 
 ./autogen.sh
 
