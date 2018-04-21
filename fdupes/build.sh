@@ -42,7 +42,7 @@ TOOLCHAIN="${NDK_ROOT}/toolchains/${HOST}-4.9/prebuilt/linux-x86_64"
 export CC="${HOST}-gcc"
 export STRIP="${HOST}-strip"
 
-PATH="$TOOLCHAIN/bin:$PATH"
+export PATH="$TOOLCHAIN/bin:$PATH"
 
 export CFLAGS="--sysroot=${NDK_ROOT}/platforms/android-${ANDROID_API}/arch-${ARCH} -fpie"
 export LDFLAGS="-pie"

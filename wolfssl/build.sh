@@ -43,7 +43,7 @@ export CC="${HOST}-gcc"
 export AR="${HOST}-ar"
 export STRIP="${HOST}-strip"
 
-PATH="$TOOLCHAIN/bin:$PATH"
+export PATH="$TOOLCHAIN/bin:$PATH"
 
 export CFLAGS="--sysroot=${NDK_ROOT}/platforms/android-${ANDROID_API}/arch-${ARCH} -fpie -DWOLFSSL_STATIC_RSA"
 export LDFLAGS="-pie"

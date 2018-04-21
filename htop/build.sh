@@ -46,7 +46,7 @@ export CFLAGS="--sysroot=${SYSROOT} -I$NCURSES_INCLUDE -L$NCURSES_LIB -fPIE"
 export LDFLAGS="-L$NCURSES_LIB -pie"
 export QUILT_PATCHES="$TOP/patches"
 
-[ -e "$NCURSES_INCLUDE/ncursesw/ncurses.h" ] || "$TOP/../ncurses/build.sh"
+[ -e "$NCURSES_INCLUDE/ncursesw/ncurses.h" ] || env -i "$TOP/../ncurses/build.sh"
 
 PREFIX="/data/local/htop"
 

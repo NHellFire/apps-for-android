@@ -42,7 +42,7 @@ TOOLCHAIN="${NDK_ROOT}/toolchains/${HOST}-4.9/prebuilt/linux-x86_64"
 
 export CROSS_COMPILE="${HOST}-"
 
-PATH="$TOOLCHAIN/bin:$PATH"
+export PATH="$TOOLCHAIN/bin:$PATH"
 
 export SYSROOT="${NDK_ROOT}/platforms/android-${ANDROID_API}/arch-${ARCH}"
 export CFLAGS="--sysroot=${SYSROOT}"
