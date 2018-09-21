@@ -5,7 +5,7 @@ ANDROID_API=23
 ARCH=arm64
 NDK_ROOT="${NDK_ROOT:-/opt/android-ndk}"
 
-export PROJECT=fdupes
+export PROJECT=jdupes
 
 TOP="$(realpath "$(dirname "$0")")"
 cd "${TOP}"
@@ -58,7 +58,7 @@ cd "${TOP}"
 
 rm -rf "${OUTDIR:?}/$ARCH/$PREFIX"
 mkdir -p "${OUTDIR:?}/$ARCH/$PREFIX/$BINDIR"
-cp -v src/fdupes "$OUTDIR/$ARCH/$PREFIX/$BINDIR/"
+cp -v src/jdupes "$OUTDIR/$ARCH/$PREFIX/$BINDIR/"
 "${STRIP}" "$OUTDIR/$ARCH/$PREFIX/$BINDIR/fdupes"
 
 

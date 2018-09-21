@@ -7,9 +7,6 @@
 [submodule "openssl/src"]
 	path = openssl/src
 	url = https://github.com/openssl/openssl.git
-[submodule "fdupes/src"]
-	path = fdupes/src
-	url = https://github.com/adrianlopezroche/fdupes.git
 [submodule "ncurses/src"]
 	path = ncurses/src
 	url = https://github.com/mirror/ncurses
@@ -19,3 +16,6 @@
 [submodule "nano/src"]
 	path = nano/src
 	url = http://git.savannah.gnu.org/r/nano.git
+[submodule "jdupes/src"]
+	path = jdupes/src
+	url = https://github.com/jbruchon/jdupes
