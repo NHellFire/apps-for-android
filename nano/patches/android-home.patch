@@ -1,0 +1,20 @@
+diff --git a/src/utils.c b/src/utils.c
+index cbd5b55b..d05c76a7 100644
+--- a/src/utils.c
++++ b/src/utils.c
+@@ -36,6 +36,7 @@ void get_homedir(void)
+     if (homedir == NULL) {
+ 	const char *homenv = getenv("HOME");
+ 
++#if !defined(__ANDROID__) && !defined(ANDROID)
+ 	/* When HOME isn't set, or when we're root, get the home directory
+ 	 * from the password file instead. */
+ 	if (homenv == NULL || geteuid() == 0) {
+@@ -44,6 +45,7 @@ void get_homedir(void)
+ 	    if (userage != NULL)
+ 		homenv = userage->pw_dir;
+ 	}
++#endif
+ 
+ 	/* Only set homedir if some home directory could be determined,
+ 	 * otherwise keep homedir NULL. */
