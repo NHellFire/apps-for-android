@@ -62,6 +62,6 @@ cd "${TOP}/src"
 	--enable-singlethreaded \
 	--with-libz
 
-make -j"$(nproc)"
+make -j"$BUILD_JOBS"
 
 printf "\n\nBuild complete!\n"

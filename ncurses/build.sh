@@ -77,7 +77,7 @@ cp "$TOP/patches/config.sub" "$TOP/patches/config.guess" -t .
 		--with-termlib \
 		--without-ada
 
-make -j8
+make -j"$BUILD_JOBS"
 
 make install
 
@@ -100,7 +100,7 @@ make install
 		--with-termlib \
 		--without-ada
 
-make -j8
+make -j"$BUILD_JOBS"
 
 make install
 

@@ -71,9 +71,9 @@ perl -pi -e 's/"android-armv7","gcc:/"android-armv7","gcc:-fpie -pie /g' Configu
 
 ./config no-shared no-ssl2 no-ssl3 no-comp no-hw no-engine
 
-make depend -j8
+make depend -j"$BUILD_JOBS"
 
-make -j8
+make -j"$BUILD_JOBS"
 
 "${CROSS_COMPILE}strip" apps/openssl
 

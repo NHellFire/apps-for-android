@@ -76,7 +76,7 @@ quilt push -a ||  [ "$?" == "2" ]
 		--enable-utf8 \
 		ac_cv_func_nl_langinfo=yes ac_cv_func_mblen=yes
 
-make -j1
+make -j"$BUILD_JOBS"
 
 make install-strip
 

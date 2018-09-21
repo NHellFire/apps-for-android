@@ -57,7 +57,7 @@ export CC="$CC $CFLAGS $LDFLAGS"
 cd "${TOP}/src"
 
 make clean
-make -j"$(nproc)"
+make -j"$BUILD_JOBS"
 
 cd "${TOP}"
 

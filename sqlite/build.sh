@@ -75,7 +75,7 @@ cd src
 	--bindir="${PREFIX}/$BINDIR" \
 	--sbindir="${PREFIX}/$BINDIR"
 
-make -j8
+make -j"$BUILD_JOBS"
 
 make install-strip DESTDIR="$OUTDIR/$ARCH"
 

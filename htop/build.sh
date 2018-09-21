@@ -76,7 +76,7 @@ make distclean
 		--enable-unicode \
 		--enable-shared=yes \
 		--enable-static=no
-make -j8
+make -j"$BUILD_JOBS"
 
 make install-strip
 rm -rf "$DESTDIR/$PREFIX/share"

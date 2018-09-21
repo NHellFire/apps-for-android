@@ -56,7 +56,7 @@ quilt push -a || [ $? = 2 ]
 cp "patches/android_ndk_${ARCH}_defconfig" .config
 yes '' | make oldconfig
 
-make -j"$(nproc)"
+make -j"$BUILD_JOBS"
 
 quilt pop -af
 
