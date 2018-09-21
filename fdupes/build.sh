@@ -1,10 +1,11 @@
 #!/bin/bash
-set -e
+set -eu
 
 ANDROID_API=23
 ARCH=arm64
-NDK_ROOT=${NDK_ROOT:-/opt/android-ndk}
+NDK_ROOT="${NDK_ROOT:-/opt/android-ndk}"
 
+export PROJECT=fdupes
 
 TOP="$(realpath "$(dirname "$0")")"
 cd "${TOP}"
@@ -36,13 +37,12 @@ export HOST="${GCC_ARCH}-linux-android$EABI"
 
 TOOLCHAIN="${NDK_ROOT}/toolchains/${HOST}-4.9/prebuilt/linux-x86_64"
 
-
-
+PREFIX="${PREFIX:-/data/mydata}"
 
 export CC="${HOST}-gcc"
 export STRIP="${HOST}-strip"
 
-PATH="$TOOLCHAIN/bin:$PATH"
+export PATH="$TOOLCHAIN/bin:$PATH"
 
 export CFLAGS="--sysroot=${NDK_ROOT}/platforms/android-${ANDROID_API}/arch-${ARCH} -fpie"
 export LDFLAGS="-pie"
@@ -52,14 +52,14 @@ export CC="$CC $CFLAGS $LDFLAGS"
 cd "${TOP}/src"
 
 make clean
-make -j$(nproc)
+make -j"$(nproc)"
 
 cd "${TOP}"
 
-rm -rf install_dir/$ARCH/
-mkdir -p install_dir/$ARCH/
-cp -v src/fdupes install_dir/$ARCH/
-${STRIP} install_dir/$ARCH/fdupes
+rm -rf "${OUTDIR:?}/$ARCH/$PREFIX"
+mkdir -p "${OUTDIR:?}/$ARCH/$PREFIX/$BINDIR"
+cp -v src/fdupes "$OUTDIR/$ARCH/$PREFIX/$BINDIR/"
+"${STRIP}" "$OUTDIR/$ARCH/$PREFIX/$BINDIR/fdupes"
 
 
-printf "\n\nBuild complete! See install_dir/$ARCH\n"
+printf "\n\nBuild complete! See OUTDIR/%s\n" "$ARCH"

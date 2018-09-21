@@ -1,14 +1,16 @@
 #!/bin/bash
-set -e
+set -eu
 
 TOP="$(realpath "$(dirname "$0")")"
 cd "${TOP}"
 
-[ -z "$ARCH" ] && [ -e "$TOP/../config.sh" ] && . "$TOP/../config.sh"
+export PROJECT=sqlite
 
-ANDROID_API=${ANDROID_API:-23}
-ARCH=${ARCH:-arm64}
-NDK_ROOT=${NDK_ROOT:-/opt/android-ndk}
+[ -e "$TOP/../config.sh" ] && . "$TOP/../config.sh"
+
+ANDROID_API="${ANDROID_API:-23}"
+ARCH="${ARCH:-arm64}"
+NDK_ROOT="${NDK_ROOT:-/opt/android-ndk}"
 
 URL="https://sqlite.org/2017/sqlite-autoconf-3200100.tar.gz"
 SHA1="48593dcd19473f25fe6fcd08048e13ddbff4c983"
@@ -38,16 +40,15 @@ export HOST="${GCC_ARCH}-linux-android$EABI"
 
 TOOLCHAIN="${NDK_ROOT}/toolchains/${HOST}-4.9/prebuilt/linux-x86_64"
 
-PATH="$TOOLCHAIN/bin:$PATH"
+export PATH="$TOOLCHAIN/bin:$PATH"
 
 export SYSROOT="${NDK_ROOT}/platforms/android-${ANDROID_API}/arch-${ARCH}"
 export CFLAGS="--sysroot=${SYSROOT} -fPIE"
 export LDFLAGS="-pie"
 
-
 # Cleanup old output
 cd "$TOP"
-rm -rf install_dir/$ARCH src
+rm -rf "${OUTDIR:?}/$ARCH" src
 
 # Download and extract source
 wget --no-if-modified-since -N "$URL"
@@ -63,15 +64,14 @@ cd src
 
 #autoreconf -f -i
 
-./configure --host=$HOST \
-	--prefix=/data/local/sqlite \
-	--sysconfdir=/data/local/sqlite \
-	--bindir=/data/local/sqlite \
-	--sbindir=/data/local/sqlite \
-	--localstatedir=/data/local/sqlite
+./configure --host="$HOST" \
+	--prefix="${PREFIX}" \
+	--exec-prefix="${PREFIX}" \
+	--bindir="${PREFIX}/$BINDIR" \
+	--sbindir="${PREFIX}/$BINDIR"
 
 make -j8
 
-make install-strip DESTDIR="$TOP/install_dir/$ARCH"
+make install-strip DESTDIR="$OUTDIR/$ARCH"
 
-printf "\n\nBuild complete! See install_dir/\n"
+printf "\n\nBuild complete! See OUTDIR/%s\n" "$ARCH"

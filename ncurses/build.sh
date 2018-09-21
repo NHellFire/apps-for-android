@@ -3,8 +3,9 @@ set -eu
 
 ANDROID_API=23
 ARCH=arm64
-NDK_ROOT=${NDK_ROOT:-/opt/android-ndk}
+NDK_ROOT="${NDK_ROOT:-/opt/android-ndk}"
 
+export PROJECT=ncurses
 
 TOP="$(realpath "$(dirname "$0")")"
 cd "${TOP}"
@@ -43,29 +44,29 @@ export SYSROOT="${NDK_ROOT}/platforms/android-${ANDROID_API}/arch-${ARCH}"
 export CFLAGS="--sysroot=${SYSROOT}"
 export CPPFLAGS="-P"
 
-PREFIX="/data/local/ncurses"
-
-export DESTDIR="$TOP/install_dir/$ARCH/"
+export DESTDIR="$OUTDIR/$ARCH/"
 
 # Cleanup old output
-rm -rf "$DESTDIR"
-mkdir -p install_dir/$ARCH
+rm -rf "${DESTDIR:?}"
+mkdir -p "$DESTDIR"
 
 cd src
 
 cp "$TOP/patches/config.sub" "$TOP/patches/config.guess" -t .
 
 # Need to build both without UTF-8 support
-./configure --host=${HOST} \
-		--prefix=${PREFIX} \
-		--exec-prefix=${PREFIX} \
+./configure --host="${HOST}" \
+		--prefix="${PREFIX}" \
+		--exec-prefix="${PREFIX}" \
+		--bindir="${PREFIX}/$BINDIR" \
+		--sbindir="${PREFIX}/$BINDIR" \
 		--without-cxx \
 		--without-cxx-binding \
 		--without-debug \
 		--without-normal \
 		--without-progs \
-		--with-terminfo-dirs=${PREFIX}/etc/terminfo \
-		--with-default-terminfo-dir=${PREFIX}/etc/terminfo \
+		--with-terminfo-dirs="${PREFIX}/etc/terminfo" \
+		--with-default-terminfo-dir="${PREFIX}/etc/terminfo" \
 		--without-manpages \
 		--with-shared \
 		--with-termlib \
@@ -76,16 +77,18 @@ make -j8
 make install
 
 # And with UTF-8 support
-./configure --host=${HOST} \
-		--prefix=${PREFIX} \
-		--exec-prefix=${PREFIX} \
+./configure --host="${HOST}" \
+		--prefix="${PREFIX}" \
+		--exec-prefix="${PREFIX}" \
+		--bindir="${PREFIX}/$BINDIR" \
+		--sbindir="${PREFIX}/$BINDIR" \
 		--without-cxx \
 		--without-cxx-binding \
 		--without-debug \
 		--without-normal \
 		--without-progs \
-		--with-terminfo-dirs=${PREFIX}/etc/terminfo \
-		--with-default-terminfo-dir=${PREFIX}/etc/terminfo \
+		--with-terminfo-dirs="${PREFIX}/etc/terminfo" \
+		--with-default-terminfo-dir="${PREFIX}/etc/terminfo" \
 		--without-manpages \
 		--with-shared \
 		--enable-widec \
@@ -96,6 +99,6 @@ make -j8
 
 make install
 
-rm -rf "$DESTDIR/$PREFIX/bin" "$DESTDIR/$PREFIX/share"
+rm -rf "${DESTDIR:?}/$PREFIX/$BINDIR" "$DESTDIR/$PREFIX/share"
 
-printf "\n\nBuild complete! See install_dir/$ARCH/\n"
+printf "\n\nBuild complete! See OUTDIR/%s/\n" "$ARCH"

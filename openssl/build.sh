@@ -1,10 +1,11 @@
 #!/bin/bash
-set -e
+set -eu
 
 ANDROID_API=23
 ARCH=arm64
-NDK_ROOT=${NDK_ROOT:-/opt/android-ndk}
+NDK_ROOT="${NDK_ROOT:-/opt/android-ndk}"
 
+export PROJECT=openssl
 
 TOP="$(realpath "$(dirname "$0")")"
 cd "${TOP}"
@@ -55,7 +56,7 @@ export CFLAGS="--sysroot=${SYSROOT}"
 export MACHINE=armv7l
 export SYSTEM=android
 export ARCH=arm
-export ANDROID_DEV=$SYSROOT/usr
+export ANDROID_DEV="$SYSROOT/usr"
 
 cd src
 
@@ -69,15 +70,15 @@ make depend -j8
 
 make -j8
 
-${CROSS_COMPILE}strip apps/openssl
+"${CROSS_COMPILE}strip" apps/openssl
 
 # Cleanup old output
 cd "$TOP"
-rm -rf install_dir/$ARCH/
-mkdir -p install_dir/$ARCH
+rm -rf "${OUTDIR:?}/$ARCH/$PREFIX/$BINDIR"
+mkdir -p "$OUTDIR/$ARCH/$PREFIX/$BINDIR"
 
 
-cp -v src/apps/openssl install_dir/$ARCH/
+cp -v src/apps/openssl "$OUTDIR/$ARCH/$PREFIX/$BINDIR"
 
 
-printf "\n\nBuild complete! See install_dir/$ARCH/\n"
+printf "\n\nBuild complete! See OUTDIR/%s/\n" "$ARCH"
