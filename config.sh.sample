@@ -1,3 +1,8 @@
 ANDROID_API=23
 ARCH=arm64
 NDK_ROOT=/opt/android-ndk
+INSTALL_PARTITION="data"
+PREFIX="/$INSTALL_PARTITION/local"
+INSTALL_DIR="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/install_dir"
+OUTDIR="$INSTALL_DIR/$PROJECT"
+BINDIR="xbin"
