@@ -6,6 +6,9 @@ ARCH=arm64
 NDK_ROOT="${NDK_ROOT:-/opt/android-ndk}"
 
 export PROJECT=ncurses
+echo
+echo "=============================="
+echo "Building $PROJECT"
 
 TOP="$(realpath "$(dirname "$0")")"
 cd "${TOP}"
@@ -31,6 +34,8 @@ case "$ARCH" in
 		echo "Unknown architecture: ${ARCH}"
 		exit
 esac
+
+echo "Building for $ARCH"
 
 export HOST="${GCC_ARCH}-linux-android$EABI"
 
@@ -101,4 +106,4 @@ make install
 
 rm -rf "${DESTDIR:?}/$PREFIX/$BINDIR" "$DESTDIR/$PREFIX/share"
 
-printf "\n\nBuild complete! See OUTDIR/%s/\n" "$ARCH"
+printf "\n\nBuild complete! See OUTDIR/%s/%s/\n" "$PROJECT" "$ARCH"

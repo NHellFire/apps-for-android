@@ -5,6 +5,9 @@ TOP="$(realpath "$(dirname "$0")")"
 cd "${TOP}"
 
 export PROJECT=sqlite
+echo
+echo "=============================="
+echo "Building $PROJECT"
 
 [ -e "$TOP/../config.sh" ] && . "$TOP/../config.sh"
 
@@ -12,8 +15,8 @@ ANDROID_API="${ANDROID_API:-23}"
 ARCH="${ARCH:-arm64}"
 NDK_ROOT="${NDK_ROOT:-/opt/android-ndk}"
 
-URL="https://sqlite.org/2017/sqlite-autoconf-3200100.tar.gz"
-SHA1="48593dcd19473f25fe6fcd08048e13ddbff4c983"
+URL="https://sqlite.org/2018/sqlite-autoconf-3250100.tar.gz"
+SHA1="1d494ca2355ffe8ddbeea7cf615ef61122fe421e"
 NAME="${URL##*/}"
 
 EABI=
@@ -35,6 +38,8 @@ case "$ARCH" in
 		echo "Unknown architecture: ${ARCH}"
 		exit
 esac
+
+echo "Building for $ARCH"
 
 export HOST="${GCC_ARCH}-linux-android$EABI"
 

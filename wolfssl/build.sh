@@ -9,6 +9,9 @@ TOP="$(realpath "$(dirname "$0")")"
 cd "${TOP}"
 
 export PROJECT=busybox
+echo
+echo "=============================="
+echo "Building $PROJECT"
 
 [ -e "$TOP/../config.sh" ] && . "$TOP/../config.sh"
 
@@ -32,6 +35,8 @@ case "$ARCH" in
 		echo "Unknown architecture: ${ARCH}"
 		exit
 esac
+
+echo "Building for $ARCH"
 
 export HOST="${GCC_ARCH}-linux-android$EABI"
 

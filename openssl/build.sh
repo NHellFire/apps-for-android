@@ -6,6 +6,9 @@ ARCH=arm64
 NDK_ROOT="${NDK_ROOT:-/opt/android-ndk}"
 
 export PROJECT=openssl
+echo
+echo "=============================="
+echo "Building $PROJECT"
 
 TOP="$(realpath "$(dirname "$0")")"
 cd "${TOP}"
@@ -37,6 +40,8 @@ case "$ARCH" in
 		echo "Unknown architecture: ${ARCH}"
 		exit
 esac
+
+echo "Building for $ARCH"
 
 export HOST="${GCC_ARCH}-linux-android$EABI"
 
@@ -81,4 +86,4 @@ mkdir -p "$OUTDIR/$ARCH/$PREFIX/$BINDIR"
 cp -v src/apps/openssl "$OUTDIR/$ARCH/$PREFIX/$BINDIR"
 
 
-printf "\n\nBuild complete! See OUTDIR/%s/\n" "$ARCH"
+printf "\n\nBuild complete! See OUTDIR/%s/%s/\n" "$PROJECT" "$ARCH"
