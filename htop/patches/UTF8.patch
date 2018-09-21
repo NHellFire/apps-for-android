@@ -1,8 +1,8 @@
-Index: htop/src/CRT.c
-===================================================================
---- htop.orig/src/CRT.c
-+++ htop/src/CRT.c
-@@ -16,7 +16,6 @@ in the source distribution for its full
+diff --git a/CRT.c b/CRT.c
+index 0d51698..3069073 100644
+--- a/CRT.c
++++ b/CRT.c
+@@ -16,7 +16,6 @@ in the source distribution for its full text.
  #include <stdlib.h>
  #include <string.h>
  #include <locale.h>
@@ -10,7 +10,7 @@ Index: htop/src/CRT.c
  
  #define ColorPair(i,j) COLOR_PAIR((7-i)*8+j)
  
-@@ -609,10 +608,7 @@ void CRT_init(int delay, int colorScheme
+@@ -609,10 +608,7 @@ void CRT_init(int delay, int colorScheme) {
     setlocale(LC_CTYPE, "");
  
  #ifdef HAVE_LIBNCURSESW
@@ -18,7 +18,7 @@ Index: htop/src/CRT.c
 -      CRT_utf8 = true;
 -   else
 -      CRT_utf8 = false;
-+  CRT_utf8 = true;
++   CRT_utf8 = true;
  #endif
  
     CRT_treeStr =

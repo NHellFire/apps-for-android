@@ -64,7 +64,7 @@ cd src
 
 quilt push -a || [ $? == 2 ]
 
-make distclean
+make distclean > /dev/null 2>&1 || true
 
 ./autogen.sh
 
