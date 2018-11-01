@@ -41,7 +41,7 @@ export HOST="${GCC_ARCH}-linux-android$EABI"
 
 TOOLCHAIN="${NDK_ROOT}/toolchains/${HOST}-4.9/prebuilt/linux-x86_64"
 
-NCURSES_INSTALL="$OUTDIR/../ncurses/$ARCH/$PREFIX"
+NCURSES_INSTALL="$(dirname "$OUTDIR")/ncurses/$ARCH/$PREFIX"
 NCURSES_INCLUDE="$NCURSES_INSTALL/include"
 NCURSES_LIB="$NCURSES_INSTALL/lib"
 
@@ -54,7 +54,7 @@ export LDFLAGS="-L$NCURSES_LIB -pie"
 [ -e "$NCURSES_INCLUDE/ncursesw/ncurses.h" ] || env -i "$TOP/../ncurses/build.sh"
 
 export QUILT_PATCHES="$TOP/patches"
-export DESTDIR="$TOP/install_dir/$ARCH/"
+export DESTDIR="$OUTDIR/$ARCH/"
 
 # Cleanup old output
 rm -rf "${DESTDIR:?}"
@@ -79,5 +79,8 @@ quilt push -a ||  [ "$?" == "2" ]
 make -j"$BUILD_JOBS"
 
 make install-strip
+
+mkdir -p "$DESTDIR/$PREFIX/etc"
+sed "s!@PREFIX@!$PREFIX!g" "$TOP/nanorc.in" > "$DESTDIR/$PREFIX/etc/nanorc"
 
 printf "\n\nBuild complete! See OUTDIR/%s/%s/\n" "$PROJECT" "$ARCH"

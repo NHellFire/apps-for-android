@@ -41,7 +41,7 @@ export HOST="${GCC_ARCH}-linux-android$EABI"
 
 TOOLCHAIN="${NDK_ROOT}/toolchains/${HOST}-4.9/prebuilt/linux-x86_64"
 
-NCURSES_INSTALL="$OUTDIR/../ncurses/$ARCH/$PREFIX"
+NCURSES_INSTALL="$(dirname "$OUTDIR")/ncurses/$ARCH/$PREFIX"
 NCURSES_INCLUDE="$NCURSES_INSTALL/include"
 NCURSES_LIB="$NCURSES_INSTALL/lib"
 
